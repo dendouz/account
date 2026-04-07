@@ -1,0 +1,32 @@
+{
+  "name": "studeo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Studeo - Belgian student financial management app",
+  "scripts": {
+    "dev:api": "pnpm --filter @studeo/api dev",
+    "dev:web": "pnpm --filter @studeo/web dev",
+    "build:shared": "pnpm --filter @studeo/shared build",
+    "build:api": "pnpm --filter @studeo/api build",
+    "build:web": "pnpm --filter @studeo/web build",
+    "build": "pnpm build:shared && pnpm build:api && pnpm build:web",
+    "test": "pnpm --filter @studeo/api test",
+    "test:watch": "pnpm --filter @studeo/api test:watch",
+    "lint": "pnpm -r lint",
+    "db:migrate": "pnpm --filter @studeo/api db:migrate",
+    "db:seed": "pnpm --filter @studeo/api db:seed",
+    "db:generate": "pnpm --filter @studeo/api db:generate"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "prisma",
+      "esbuild"
+    ]
+  }
+}

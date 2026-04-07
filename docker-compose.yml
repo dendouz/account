@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: studeo
+      POSTGRES_PASSWORD: studeo_dev
+      POSTGRES_DB: studeo
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U studeo"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: postgresql://studeo:studeo_dev@db:5432/studeo?schema=public
+      JWT_SECRET: dev-jwt-secret-change-in-production
+      JWT_REFRESH_SECRET: dev-refresh-secret-change-in-production
+      API_PORT: "3001"
+      API_HOST: "0.0.0.0"
+      NODE_ENV: development
+      UPLOAD_DIR: ./uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - api_uploads:/app/apps/api/uploads
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3001/api
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
+  api_uploads:
