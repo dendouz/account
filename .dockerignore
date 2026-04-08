@@ -1,0 +1,10 @@
+node_modules
+**/node_modules
+**/.next
+**/dist
+**/.expo
+.git
+*.md
+docs
+legal
+apps/mobile

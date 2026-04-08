@@ -3,7 +3,7 @@ import { View, Text, ScrollView, StyleSheet, Pressable, Alert, ActivityIndicator
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { colors, spacing, borderRadius, fontSize, fontWeight, shadow } from "../../lib/theme";
-import { apiClient } from "../../lib/api";
+import { api } from "../../lib/api";
 import { logout as authLogout } from "../../lib/auth";
 
 interface User {
@@ -34,8 +34,8 @@ export default function ProfileScreen() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    apiClient.get<{ data: User }>("/profile")
-      .then((r) => setUser(r.data))
+    api.get<User>("/profile")
+      .then((u) => setUser(u))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);

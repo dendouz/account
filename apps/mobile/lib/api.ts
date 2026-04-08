@@ -1,6 +1,5 @@
 import { getToken, saveTokens, clearTokens } from "./auth";
-
-const API_BASE = "http://localhost:3001/api";
+import { API_BASE } from "./config";
 
 interface ApiResponse<T> {
   success: boolean;

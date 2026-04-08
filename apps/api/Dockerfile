@@ -2,6 +2,9 @@ FROM node:22-alpine AS base
 RUN corepack enable && corepack prepare pnpm@10 --activate
 WORKDIR /app
 
+# Force hoisted node_modules so binaries (tsc, prisma) are accessible
+RUN echo "node-linker=hoisted" > .npmrc
+
 # Copy workspace files
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml* ./
 COPY packages/shared/package.json packages/shared/

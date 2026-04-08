@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { View, Text, ScrollView, StyleSheet, TextInput, Pressable, FlatList, Alert, ActivityIndicator } from "react-native";
 import { colors, spacing, borderRadius, fontSize, fontWeight, shadow } from "../../lib/theme";
-import { apiClient } from "../../lib/api";
+import { api } from "../../lib/api";
 
 interface WorkHour {
   id: string;
@@ -23,12 +23,12 @@ export default function HoursScreen() {
 
   const loadData = useCallback(async () => {
     try {
-      const [hoursRes, summaryRes] = await Promise.all([
-        apiClient.get<{ data: WorkHour[] }>("/hours"),
-        apiClient.get<{ data: { totalHours: number } }>("/hours/summary"),
+      const [entries, summary] = await Promise.all([
+        api.get<WorkHour[]>("/hours"),
+        api.get<{ totalHours: number }>("/hours/summary"),
       ]);
-      setEntries(hoursRes.data);
-      setTotalHours(summaryRes.data.totalHours);
+      setEntries(entries);
+      setTotalHours(summary.totalHours);
     } catch (err) {
       console.error(err);
     } finally {
@@ -45,7 +45,7 @@ export default function HoursScreen() {
     }
     setSubmitting(true);
     try {
-      await apiClient.post("/hours", {
+      await api.post("/hours", {
         date,
         hours: parseFloat(hoursInput),
         employer,
@@ -70,7 +70,7 @@ export default function HoursScreen() {
         style: "destructive",
         onPress: async () => {
           try {
-            await apiClient.delete(`/hours/${id}`);
+            await api.delete(`/hours/${id}`);
             await loadData();
           } catch (err: any) {
             Alert.alert("Erreur", err.message);

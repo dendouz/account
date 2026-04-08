@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { View, Text, ScrollView, StyleSheet, TextInput, Pressable, Alert, ActivityIndicator } from "react-native";
 import { colors, spacing, borderRadius, fontSize, fontWeight, shadow } from "../../lib/theme";
-import { apiClient } from "../../lib/api";
-import { INCOME_CATEGORIES, EXPENSE_CATEGORIES } from "@studeo/shared";
+import { api } from "../../lib/api";
+import { INCOME_CATEGORIES, EXPENSE_CATEGORIES } from "../../lib/constants";
 
 interface Transaction {
   id: string;
@@ -25,8 +25,8 @@ export default function TransactionsScreen() {
 
   const loadData = useCallback(async () => {
     try {
-      const res = await apiClient.get<{ data: Transaction[] }>("/transactions");
-      setTransactions(res.data);
+      const txs = await api.get<Transaction[]>("/transactions");
+      setTransactions(txs);
     } catch (err) {
       console.error(err);
     } finally {
@@ -45,7 +45,7 @@ export default function TransactionsScreen() {
     }
     setSubmitting(true);
     try {
-      await apiClient.post("/transactions", { type, amount: parseFloat(amount), category, description, date });
+      await api.post("/transactions", { type, amount: parseFloat(amount), category, description, date });
       setAmount("");
       setDescription("");
       await loadData();
@@ -63,7 +63,7 @@ export default function TransactionsScreen() {
         text: "Supprimer",
         style: "destructive",
         onPress: async () => {
-          try { await apiClient.delete(`/transactions/${id}`); await loadData(); } catch (err: any) { Alert.alert("Erreur", err.message); }
+          try { await api.delete(`/transactions/${id}`); await loadData(); } catch (err: any) { Alert.alert("Erreur", err.message); }
         },
       },
     ]);

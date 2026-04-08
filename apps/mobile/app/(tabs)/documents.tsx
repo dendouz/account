@@ -2,8 +2,8 @@ import { useEffect, useState, useCallback } from "react";
 import { View, Text, ScrollView, StyleSheet, Pressable, Alert, ActivityIndicator, Image } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { colors, spacing, borderRadius, fontSize, fontWeight, shadow } from "../../lib/theme";
-import { apiClient } from "../../lib/api";
-import { DOCUMENT_TYPE_LABELS } from "@studeo/shared";
+import { api } from "../../lib/api";
+import { DOCUMENT_TYPE_LABELS } from "../../lib/constants";
 
 interface Document {
   id: string;
@@ -22,8 +22,8 @@ export default function DocumentsScreen() {
 
   const loadData = useCallback(async () => {
     try {
-      const res = await apiClient.get<{ data: Document[] }>("/documents");
-      setDocuments(res.data);
+      const docs = await api.get<Document[]>("/documents");
+      setDocuments(docs);
     } catch (err) {
       console.error(err);
     } finally {
@@ -44,14 +44,13 @@ export default function DocumentsScreen() {
     setUploading(true);
     try {
       const asset = result.assets[0];
-      const formData = new FormData();
-      formData.append("file", {
-        uri: asset.uri,
-        name: asset.fileName || "document.jpg",
-        type: asset.mimeType || "image/jpeg",
-      } as any);
-      formData.append("type", selectedType);
-      await apiClient.upload("/documents/upload", formData);
+      await api.upload(
+        "/documents/upload",
+        asset.uri,
+        asset.fileName || "document.jpg",
+        asset.mimeType || "image/jpeg",
+        { type: selectedType }
+      );
       await loadData();
     } catch (err: any) {
       Alert.alert("Erreur", err.message);
@@ -67,7 +66,7 @@ export default function DocumentsScreen() {
         text: "Supprimer",
         style: "destructive",
         onPress: async () => {
-          try { await apiClient.delete(`/documents/${id}`); await loadData(); } catch (err: any) { Alert.alert("Erreur", err.message); }
+          try { await api.delete(`/documents/${id}`); await loadData(); } catch (err: any) { Alert.alert("Erreur", err.message); }
         },
       },
     ]);

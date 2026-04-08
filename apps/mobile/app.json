@@ -4,30 +4,22 @@
     "slug": "studeo",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
     "scheme": "studeo",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#1e40af"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "be.studeo.app"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#1e40af"
       },
       "package": "be.studeo.app"
     },
     "web": {
       "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/favicon.png"
+      "output": "static"
     },
     "plugins": ["expo-router", "expo-secure-store", "expo-image-picker"],
     "experiments": {

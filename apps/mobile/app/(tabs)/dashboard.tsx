@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from "react-native";
 import { colors, spacing, borderRadius, fontSize, fontWeight, shadow } from "../../lib/theme";
-import { apiClient } from "../../lib/api";
+import { api } from "../../lib/api";
 
 interface HoursSummary {
   totalHours: number;
@@ -23,8 +23,8 @@ export default function DashboardScreen() {
 
   useEffect(() => {
     Promise.all([
-      apiClient.get<{ data: HoursSummary }>("/hours/summary").then((r) => setHours(r.data)),
-      apiClient.get<{ data: TransactionSummary }>("/transactions/summary").then((r) => setTxSummary(r.data)),
+      api.get<HoursSummary>("/hours/summary").then((r) => setHours(r)),
+      api.get<TransactionSummary>("/transactions/summary").then((r) => setTxSummary(r)),
     ])
       .catch(console.error)
       .finally(() => setLoading(false));
