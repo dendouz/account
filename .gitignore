@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.next/
+.expo/
+*.tsbuildinfo
+.env
+.env.local
+.env.production
+uploads/*
+!uploads/.gitkeep
+coverage/
+*.log
+.DS_Store
+ios/
+android/

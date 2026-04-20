@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "Studeo",
+    "slug": "studeo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "studeo",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "be.studeo.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#1e40af"
+      },
+      "package": "be.studeo.app"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": ["expo-router", "expo-secure-store", "expo-image-picker"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

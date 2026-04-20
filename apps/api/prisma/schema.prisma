@@ -1,0 +1,179 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum StudentStatus {
+  JOBISTE
+  INDEPENDENT
+  ENTREPRENEUR
+  OTHER
+}
+
+enum Region {
+  FLANDERS
+  WALLONIA
+  BRUSSELS
+}
+
+enum Language {
+  FR
+  NL
+  EN
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum DocumentType {
+  RECEIPT
+  PAYSLIP
+  CONTRACT
+  INVOICE
+  TAX_DOCUMENT
+  OTHER
+}
+
+enum ObligationStatus {
+  PENDING
+  DONE
+  SKIPPED
+}
+
+model User {
+  id            String        @id @default(uuid())
+  email         String        @unique
+  passwordHash  String
+  firstName     String
+  lastName      String
+  studentStatus StudentStatus @default(JOBISTE)
+  region        Region        @default(BRUSSELS)
+  language      Language      @default(FR)
+  birthDate     DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  workHours       WorkHour[]
+  transactions    Transaction[]
+  documents       Document[]
+  userObligations UserObligation[]
+  reminders       Reminder[]
+
+  @@map("users")
+}
+
+model WorkHour {
+  id          String   @id @default(uuid())
+  userId      String
+  date        DateTime
+  hours       Float
+  employer    String
+  description String   @default("")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+  @@map("work_hours")
+}
+
+model Transaction {
+  id          String          @id @default(uuid())
+  userId      String
+  type        TransactionType
+  amount      Float
+  category    String
+  description String          @default("")
+  date        DateTime
+  documentId  String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
+
+  @@index([userId, date])
+  @@index([userId, type])
+  @@map("transactions")
+}
+
+model Document {
+  id         String       @id @default(uuid())
+  userId     String
+  type       DocumentType
+  fileName   String
+  filePath   String
+  uploadedAt DateTime     @default(now())
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  @@index([userId])
+  @@map("documents")
+}
+
+model Obligation {
+  id              String          @id @default(uuid())
+  title           String
+  description     String
+  deadline        DateTime?
+  category        String
+  studentStatuses StudentStatus[]
+  regions         Region[]
+  createdAt       DateTime        @default(now())
+
+  userObligations UserObligation[]
+
+  @@map("obligations")
+}
+
+model UserObligation {
+  id           String           @id @default(uuid())
+  userId       String
+  obligationId String
+  status       ObligationStatus @default(PENDING)
+  completedAt  DateTime?
+  createdAt    DateTime         @default(now())
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  obligation Obligation @relation(fields: [obligationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, obligationId])
+  @@map("user_obligations")
+}
+
+model Reminder {
+  id          String    @id @default(uuid())
+  userId      String
+  title       String
+  message     String
+  scheduledAt DateTime
+  sentAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, scheduledAt])
+  @@map("reminders")
+}
+
+model KnowledgeArticle {
+  id              String          @id @default(uuid())
+  slug            String          @unique
+  title           String
+  content         String
+  category        String
+  studentStatuses StudentStatus[]
+  sortOrder       Int             @default(0)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@map("knowledge_articles")
+}
